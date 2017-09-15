@@ -4,9 +4,11 @@ Get pull request activity over the last N days for a specific member of your org
 
 ## Installation
 
-* git clone git@github.com:mattpardee/github-pr-activity.git
-* cd github-pr-activity
-* npm install
+```console
+$ git clone git@github.com:mattpardee/github-pr-activity.git
+$ cd github-pr-activity
+$ npm install
+```
 
 Go generate a [personal GitHub auth token](https://github.com/settings/tokens).
 
