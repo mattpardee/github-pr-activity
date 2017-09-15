@@ -118,7 +118,6 @@ getUserActivity(owner, user, 'author', ghSinceFormat)
 
     log(`Authored PR summary: ${edges.length} opened between ${between}\n`);
     console.table(_.values(repoSummary));
-    log('');
 
     return getUserActivity(owner, user, 'commenter', ghSinceFormat);
   })

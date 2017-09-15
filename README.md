@@ -1,7 +1,7 @@
 # Github PR activity
 
-Get authored and commented-on pull request activity over the last N days for a specific member
-of your organization.
+This tool allows you to get a quick overview of the PRs a member of your organization has been authoring
+and collaborating on. You can specify the org, user and how many days you want to pull data from.
 
 ## Installation
 
