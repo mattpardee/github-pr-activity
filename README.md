@@ -48,7 +48,7 @@ Non-authored PR collaboration summary: 45 commented on between 2017/07/31 - 2017
 
 Repo                      PRs collaborated on
 ------------------------  -------------------
-change/fake_repo          54
+change/fake_repo          43
 change/other_repo         2
 ```
 
