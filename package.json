@@ -1,0 +1,16 @@
+{
+  "name": "github-pr-activity",
+  "version": "1.0.0",
+  "description": "Get pull request activity for a user in your org",
+  "main": "index.js",
+  "author": "Matt Pardee <matt@codeability.io>",
+  "license": "MIT",
+  "dependencies": {
+    "colors": "^1.1.2",
+    "commander": "^2.11.0",
+    "console.table": "^0.9.1",
+    "graphql-client": "^2.0.0",
+    "lodash": "^4.17.4",
+    "moment": "^2.18.1"
+  }
+}
