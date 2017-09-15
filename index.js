@@ -28,6 +28,9 @@ function getUserActivity(owner, user, authorOrCommenter = 'author', since) {
       edges {
         node {
           ... on PullRequest {
+            author {
+              login
+            }
             title
             state
             mergedAt
@@ -108,15 +111,20 @@ getUserActivity(owner, user, 'author', ghSinceFormat)
   .then((body) => {
     const edges = body.data.search.edges;
     const repoSummary = {};
+    let nonAuthoredCollaborations = 0;
 
     _.each(edges, (edge) => {
       const repoLoc = edge.node.repository.nameWithOwner;
 
-      if (!repoSummary[repoLoc]) repoSummary[repoLoc] = { Repo: repoLoc, 'PRs collaborated on': 1 };
-      else repoSummary[repoLoc]['PRs collaborated on']++;
+      if (edge.node.author.login !== user) {
+        nonAuthoredCollaborations++;
+
+        if (!repoSummary[repoLoc]) repoSummary[repoLoc] = { Repo: repoLoc, 'PRs collaborated on': 1 };
+        else repoSummary[repoLoc]['PRs collaborated on']++;
+      }
     });
 
-    log(`PR collaboration summary: ${edges.length} commented on between ${between}\n`);
+    log(`Non-authored PR collaboration summary: ${nonAuthoredCollaborations} commented on between ${between}\n`);
     console.table(_.values(repoSummary));
   })
   .catch((err) => {
