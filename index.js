@@ -66,45 +66,59 @@ const since = moment().subtract(daysAgo, 'days');
 const ghSinceFormat = since.format('YYYY-MM-DD');
 const between = `${since.format('YYYY/MM/DD')} - ${moment().format('YYYY/MM/DD')}`;
 
+function outputPrDetails(node, outputAuthor = false) {
+  const prState = node.state;
+  const createdAt = moment(node.createdAt);
+
+  log(_.trim(node.title), prState);
+  if (outputAuthor) log(`Author: ${node.author.login}`, prState);
+
+  log(`Participants: ${_.map(node.participants.edges, participant => {
+    return participant.node.name || participant.node.login;
+  }).join(', ')}`, prState);
+
+  log(`Opened ${prState === 'OPEN' ? createdAt.calendar() : createdAt.format('lll')}`, prState);
+  if (prState === 'MERGED') {
+    log(`Merged ${moment(node.mergedAt).format('lll')}`, prState);
+  } else if (prState === 'CLOSED') {
+    log(`Closed ${moment(node.updatedAt).format('lll')}`, prState);
+  }
+
+  log(node.url, prState);
+
+  // Newline
+  log('');
+}
+
 getUserActivity(owner, user, 'author', ghSinceFormat)
   .then((body) => {
+    if (body.errors) {
+      console.log(body.errors);
+      return;
+    }
+
     const reportName = `Report for ${user} ${between}`;
     log(`\n${reportName}\n${_.repeat('=', reportName.length)}\n`);
+
+    log('Authored PRs\n');
 
     const edges = body.data.search.edges;
     const repoSummary = {};
 
     _.each(edges, (edge) => {
-      const node = edge.node;
-      const prState = node.state;
-      const createdAt = moment(node.createdAt);
-      const repoLoc = node.repository.nameWithOwner;
+      const repoLoc = edge.node.repository.nameWithOwner;
 
       // Aggregate some stats about the author's PRs against the
       // repos in this reporting period
       if (!repoSummary[repoLoc]) repoSummary[repoLoc] = { Repo: repoLoc, 'Authored PRs': 1 };
       else repoSummary[repoLoc]['Authored PRs']++;
 
-      log(_.trim(node.title), prState);
-      log(`Participants: ${_.map(node.participants.edges, participant => {
-        return participant.node.name || participant.node.login;
-      }).join(', ')}`, prState);
-
-      log(`Opened ${node.state === 'OPEN' ? createdAt.calendar() : createdAt.format('lll')}`, prState);
-      if (prState === 'MERGED') {
-        log(`Merged ${moment(node.mergedAt).format('lll')}`, prState);
-      } else if (prState === 'CLOSED') {
-        log(`Closed ${moment(node.updatedAt).format('lll')}`, prState);
-      }
-
-      log(node.url, prState);
-
-      // Newline
-      log('');
+      outputPrDetails(edge.node);
     });
 
     log(`Authored PR summary: ${edges.length} opened between ${between}\n`);
     console.table(_.values(repoSummary));
+    log('');
 
     return getUserActivity(owner, user, 'commenter', ghSinceFormat);
   })
@@ -112,6 +126,9 @@ getUserActivity(owner, user, 'author', ghSinceFormat)
     const edges = body.data.search.edges;
     const repoSummary = {};
     let nonAuthoredCollaborations = 0;
+
+    log(_.repeat('=', 80));
+    log('\nPRs collaborated on\n');
 
     _.each(edges, (edge) => {
       const repoLoc = edge.node.repository.nameWithOwner;
@@ -121,6 +138,8 @@ getUserActivity(owner, user, 'author', ghSinceFormat)
 
         if (!repoSummary[repoLoc]) repoSummary[repoLoc] = { Repo: repoLoc, 'PRs collaborated on': 1 };
         else repoSummary[repoLoc]['PRs collaborated on']++;
+
+        outputPrDetails(edge.node, true);
       }
     });
 
