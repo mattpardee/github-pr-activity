@@ -14,14 +14,17 @@ const client = require('graphql-client')({
 commander
   .version('1.0.0')
   .option('-o, --owner [owner]', 'Owner (username or organization) of the repos to search')
-  .option('-a, --author [author]', 'Author (GitHub username) of the PRs')
+  .option('-u, --user [user]', 'Author of PRs and commenter on PRs (GitHub username)')
   .option('-d, --days <n>', 'Number of days ago', parseInt)
   .parse(process.argv);
 
-function getUserActivity(owner, author, since) {
+/*
+ * authorOrCommenter can be either 'author' or 'commenter' (duh)
+ */
+function getUserActivity(owner, user, authorOrCommenter = 'author', since) {
   return client.query(`
   {
-    search(query: "is:pr user:${owner} author:${author} created:>${since}", type: ISSUE, last: 100) {
+    search(query: "is:pr user:${owner} ${authorOrCommenter}:${user} created:>${since}", type: ISSUE, last: 100) {
       edges {
         node {
           ... on PullRequest {
@@ -54,14 +57,15 @@ function getUserActivity(owner, author, since) {
 }
 
 const owner = commander.owner;
-const author = commander.author;
+const user = commander.user;
 const daysAgo = commander.days || 30;
 const since = moment().subtract(daysAgo, 'days');
+const ghSinceFormat = since.format('YYYY-MM-DD');
 const between = `${since.format('YYYY/MM/DD')} - ${moment().format('YYYY/MM/DD')}`;
 
-getUserActivity(owner, author, since.format('YYYY-MM-DD'))
+getUserActivity(owner, user, 'author', ghSinceFormat)
   .then((body) => {
-    const reportName = `Report for ${author} ${between}`;
+    const reportName = `Report for ${user} ${between}`;
     log(`\n${reportName}\n${_.repeat('=', reportName.length)}\n`);
 
     const edges = body.data.search.edges;
@@ -75,8 +79,8 @@ getUserActivity(owner, author, since.format('YYYY-MM-DD'))
 
       // Aggregate some stats about the author's PRs against the
       // repos in this reporting period
-      if (!repoSummary[repoLoc]) repoSummary[repoLoc] = { Repo: repoLoc, PRs: 1 };
-      else repoSummary[repoLoc].PRs++;
+      if (!repoSummary[repoLoc]) repoSummary[repoLoc] = { Repo: repoLoc, 'Authored PRs': 1 };
+      else repoSummary[repoLoc]['Authored PRs']++;
 
       log(_.trim(node.title), prState);
       log(`Participants: ${_.map(node.participants.edges, participant => {
@@ -96,7 +100,23 @@ getUserActivity(owner, author, since.format('YYYY-MM-DD'))
       log('');
     });
 
-    log(`Summary: ${edges.length} pull request${edges.length === 1 ? '' : 's'} opened between ${between}\n`);
+    log(`Authored PR summary: ${edges.length} opened between ${between}\n`);
+    console.table(_.values(repoSummary));
+
+    return getUserActivity(owner, user, 'commenter', ghSinceFormat);
+  })
+  .then((body) => {
+    const edges = body.data.search.edges;
+    const repoSummary = {};
+
+    _.each(edges, (edge) => {
+      const repoLoc = edge.node.repository.nameWithOwner;
+
+      if (!repoSummary[repoLoc]) repoSummary[repoLoc] = { Repo: repoLoc, 'PRs collaborated on': 1 };
+      else repoSummary[repoLoc]['PRs collaborated on']++;
+    });
+
+    log(`PR collaboration summary: ${edges.length} commented on between ${between}\n`);
     console.table(_.values(repoSummary));
   })
   .catch((err) => {

@@ -1,6 +1,7 @@
 # Github PR activity
 
-Get pull request activity over the last N days for a specific member of your organization.
+Get authored and commented-on pull request activity over the last N days for a specific member
+of your organization.
 
 ## Installation
 
@@ -18,8 +19,8 @@ for their GraphQL API; YMMV if you're using your access token(s) heavily, for ex
 ## Use
 
 ```console
-$ TOKEN=[github auth token] node index.js --owner [org or username] --author [github username] --days 30
-$ TOKEN=[github auth token] node index.js --owner change --author mattpardee --days 45
+$ TOKEN=[github auth token] node index.js --owner [org or username] --user [github username] --days 30
+$ TOKEN=[github auth token] node index.js --owner change --user mattpardee --days 45
 ```
 
 This will output something like:
@@ -35,13 +36,20 @@ https://github.com/change/fake_repo/pull/3
 
 ...all the other pull requests between that period...
 
-Summary: 21 pull requests opened between 2017/07/31 - 2017/09/14
+Authored PR summary: 21 pull requests opened between 2017/07/31 - 2017/09/14
 
-Repo                     PRs
------------------------  ---
+Repo                     Authored PRs
+-----------------------  ------------
 change/fake_repo         18
 change/other_repo        2
 change/unfamiliar_repo   1
+
+PR collaboration summary: 66 commented on between 2017/07/31 - 2017/09/14
+
+Repo                      PRs collaborated on
+------------------------  -------------------
+change/fake_repo          54
+change/other_repo         2
 ```
 
 Pull request summaries are color coded:
