@@ -1,10 +1,7 @@
 # Github PR activity
 
-This tool generates reports of the PRs a member of your organization has been authoring and
-collaborating on. You can specify the org, user and how many days you want to pull data from.
-
-It can also "compare" against other user activity in the same run if you want to see how
-a certain team member compares to other members of the team.
+This tool generates activity reports of the PRs for members of your organization.
+You can specify the org, username(s) and how many days you want to pull data from.
 
 ## Installation
 
@@ -25,24 +22,28 @@ As a fallback the app will use a TOKEN environment var.
 ## Use
 
 ```console
-$ TOKEN=[github auth token] node activity --owner [org or username] --user [github username] --days 30
+$ TOKEN=[github auth token] node activity --owner [org or username] --users <github username(s)> --days 30
 ```
 
-**For example**
+**Examples**
 
 ```console
-$ TOKEN=[github auth token] node activity --owner change --user mattpardee --days 45 --detail
+$ TOKEN=[github auth token] node activity --owner change --users mattpardee --days 45 --detail
 
-... or if you have your API token configured in config/github.json ...
+# or if you have your API token configured in config/github.json ...
 
-$ node activity --owner change --user mattpardee --days 45 --detail
+$ node activity --owner change --users mattpardee --days 45 --detail
+
+# multiple users
+
+$ node activity --owner change --users mattpardee,anotheruser,userthere --days 30
 ```
 
 This will output something like:
 
 ```
-Report for mattpardee 2017/07/31 - 2017/09/14
-=============================================
+2017/07/31 - 2017/09/14 Report
+==============================
 
 Some great pull request I've got for you!
 Participants: Matt Pardee, Another Greatengineer
@@ -51,7 +52,7 @@ https://github.com/change/fake_repo/pull/3
 
 ...all the other pull requests between that period...
 
-Authored PR summary: 21 pull requests opened between 2017/07/31 - 2017/09/14
+Authored PR summary (21 total)
 
 Repo                     Count
 -----------------------  -----
@@ -59,20 +60,12 @@ change/fake_repo         18
 change/other_repo        2
 change/unfamiliar_repo   1
 
-Non-authored PR collaboration summary: 45 commented on between 2017/07/31 - 2017/09/14
+Non-authored PR comment summary (45 total)
 
 Repo                      Count
 ------------------------  -----
 change/fake_repo          43
 change/other_repo         2
-```
-
-## Comparing
-
-To compare the main user against other users:
-
-```console
-$ node activity --owner change --user mattpardee --days 30 --compare anotheruser,userthree
 ```
 
 ## Notes
