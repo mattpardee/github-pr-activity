@@ -1,7 +1,8 @@
 # Github PR activity
 
 This tool generates activity reports of the PRs for members of your organization.
-You can specify the org, username(s) and how many days you want to pull data from.
+You can specify the org, username(s) or team, and how many days you want to pull
+data from.
 
 ## Installation
 
@@ -45,7 +46,15 @@ Multiple users:
 $ node activity --owner change --users mattpardee,anotheruser,userthree --days 30
 ```
 
-This will output something like:
+Specify a team:
+
+```console
+$ node activity --owner change --team devops --days 7
+$ node activity --owner change --team "Quality Assurance" --days 7
+```
+
+If you include the `--detail` flag it will output something like below. Without the
+`--detail` flag it will output only summary data.
 
 ```
 2017/07/31 - 2017/09/14 Report
