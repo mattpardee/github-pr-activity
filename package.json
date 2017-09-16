@@ -6,6 +6,7 @@
   "author": "Matt Pardee <matt@codeability.io>",
   "license": "MIT",
   "dependencies": {
+    "bluebird": "^3.5.0",
     "colors": "^1.1.2",
     "commander": "^2.11.0",
     "console.table": "^0.9.1",

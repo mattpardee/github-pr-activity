@@ -3,6 +3,9 @@
 This tool allows you to get a quick overview of the PRs a member of your organization has been authoring
 and collaborating on. You can specify the org, user and how many days you want to pull data from.
 
+It can also "compare" against other user activity in the same run. For example, if you want to see how
+a certain team member compares to other members of the team, you can generate that report.
+
 ## Installation
 
 ```console
@@ -28,11 +31,11 @@ $ TOKEN=[github auth token] node activity --owner [org or username] --user [gith
 **For example**
 
 ```console
-$ TOKEN=[github auth token] node activity --owner change --user mattpardee --days 45
+$ TOKEN=[github auth token] node activity --owner change --user mattpardee --days 45 --detail
 
 ... or if you have your API token configured in config/github.json ...
 
-$ node activity --owner change --user mattpardee --days 45
+$ node activity --owner change --user mattpardee --days 45 --detail
 ```
 
 This will output something like:
@@ -64,13 +67,23 @@ change/fake_repo          43
 change/other_repo         2
 ```
 
+## Comparing
+
+To compare the main user against other users:
+
+```console
+$ node activity --owner change --user mattpardee --days 30 --compare anotheruser,userthree
+```
+
+## Notes
+
 Pull request summaries are color coded:
 
 * Green means merged
 * Yellow means open
 * Red means closed without a merge
 
-**Pro tip:** in the mac terminal you can hold Command and click on the URLs to open them in your browser.
+**Pro tip:** in the mac terminal you can hold Command and double-click on the URLs to open them in your browser.
 
 _Note: there is currently no pagination support; the code is only able to get the last 100 items, so if
 the user you're checking in on is a prolific pull request opener or you go back enough days, you
