@@ -50,16 +50,17 @@ function runCompare() {
   log('     Compare     '.bgGreen.bold);
   log('================='.bgGreen.bold);
 
-  Promise.each(commander.compare, (username) =>
+  Promise.map(commander.compare, (username) =>
     new Promise(resolve => {
       const user = _.trim(username);
 
-      log(`\n${user.bgCyan.bold}\n`);
       Promise.all([
         getUserPullRequestActivity(commander.owner, user, 'author', ghSinceFormat),
         getUserPullRequestActivity(commander.owner, user, 'commenter', ghSinceFormat),
       ])
       .then(([authorActivity, commenterActivity]) => {
+        log(`\n${user.bgCyan.bold}\n`);
+
         analyzeAuthorActivity(authorActivity, { outputPullRequestDetails: false });
         analyzeCommenterActivity(commenterActivity, { user, outputPullRequestDetails: false });
 
@@ -70,7 +71,7 @@ function runCompare() {
         resolve();
       });
     })
-  )
+  , { concurrency: 2 })
   .catch(err => {
     console.error(err);
   });
