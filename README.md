@@ -50,16 +50,16 @@ https://github.com/change/fake_repo/pull/3
 
 Authored PR summary: 21 pull requests opened between 2017/07/31 - 2017/09/14
 
-Repo                     Authored PRs
------------------------  ------------
+Repo                     Count
+-----------------------  -----
 change/fake_repo         18
 change/other_repo        2
 change/unfamiliar_repo   1
 
 Non-authored PR collaboration summary: 45 commented on between 2017/07/31 - 2017/09/14
 
-Repo                      PRs collaborated on
-------------------------  -------------------
+Repo                      Count
+------------------------  -----
 change/fake_repo          43
 change/other_repo         2
 ```
