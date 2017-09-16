@@ -16,11 +16,23 @@ Go generate a [personal GitHub auth token](https://github.com/settings/tokens).
 Note GitHub's [rate limiting policy](https://developer.github.com/v4/guides/resource-limitations/)
 for their GraphQL API; YMMV if you're using your access token(s) heavily, for example.
 
+You can create a config/github.json file to store the token you'll use for making API requests.
+As a fallback the app will use a TOKEN environment var.
+
 ## Use
 
 ```console
 $ TOKEN=[github auth token] node index.js --owner [org or username] --user [github username] --days 30
+```
+
+**For example**
+
+```console
 $ TOKEN=[github auth token] node index.js --owner change --user mattpardee --days 45
+
+... or if you have your API token configured in config/github.json ...
+
+$ node index.js --owner change --user mattpardee --days 45
 ```
 
 This will output something like:
@@ -54,8 +66,8 @@ change/other_repo         2
 
 Pull request summaries are color coded:
 
-* Green means open
-* Yellow means merged
+* Green means merged
+* Yellow means open
 * Red means closed without a merge
 
 **Pro tip:** in the mac terminal you can hold Command and click on the URLs to open them in your browser.
