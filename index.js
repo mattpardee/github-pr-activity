@@ -20,12 +20,12 @@ const since = moment().subtract(daysAgo, 'days');
 const ghSinceFormat = since.format('YYYY-MM-DD');
 const between = `${since.format('YYYY/MM/DD')} - ${moment().format('YYYY/MM/DD')}`;
 
-function outputPrDetails(node, outputAuthor = false) {
+function outputPullRequestDetails(node, options = {}) {
   const prState = node.state;
   const createdAt = moment(node.createdAt);
 
   log(_.trim(node.title), prState);
-  if (outputAuthor) log(`Author: ${node.author.login}`, prState);
+  if (options.outputAuthor) log(`Author: ${node.author.login}`, prState);
 
   log(`Participants: ${_.map(node.participants.edges, participant => {
     return participant.node.name || participant.node.login;
@@ -53,6 +53,19 @@ function checkErrors(body) {
   return false;
 }
 
+function getRepoSummary(edges) {
+  const repoSummary = {};
+
+  _.each(edges, (edge) => {
+    const repoLoc = edge.node.repository.nameWithOwner;
+
+    if (!repoSummary[repoLoc]) repoSummary[repoLoc] = { Repo: repoLoc, 'Number': 1 };
+    else repoSummary[repoLoc]['Number']++;
+  });
+
+  return repoSummary;
+}
+
 function handleAuthorActivity(body) {
   if (checkErrors(body)) return;
 
@@ -62,48 +75,31 @@ function handleAuthorActivity(body) {
   log('Authored PRs\n');
 
   const edges = body.data.search.edges;
-  const repoSummary = {};
 
   _.each(edges, (edge) => {
-    const repoLoc = edge.node.repository.nameWithOwner;
-
-    // Aggregate some stats about the author's PRs against the
-    // repos in this reporting period
-    if (!repoSummary[repoLoc]) repoSummary[repoLoc] = { Repo: repoLoc, 'Authored PRs': 1 };
-    else repoSummary[repoLoc]['Authored PRs']++;
-
-    outputPrDetails(edge.node);
+    outputPullRequestDetails(edge.node);
   });
 
   log(`Authored PR summary: ${edges.length} opened between ${between}\n`);
-  console.table(_.values(repoSummary));
+  console.table(_.values(getRepoSummary(edges)));
 }
 
 function handleCommenterActivity(body) {
   if (checkErrors(body)) return;
 
   const edges = body.data.search.edges;
-  const repoSummary = {};
-  let nonAuthoredCollaborations = 0;
 
   log(_.repeat('=', 80));
   log('\nPRs collaborated on\n');
 
-  _.each(edges, (edge) => {
-    const repoLoc = edge.node.repository.nameWithOwner;
+  const nonAuthoredPullRequests = _.filter(edges, (edge) => edge.node.author.login !== user);
 
-    if (edge.node.author.login !== user) {
-      nonAuthoredCollaborations++;
-
-      if (!repoSummary[repoLoc]) repoSummary[repoLoc] = { Repo: repoLoc, 'PRs collaborated on': 1 };
-      else repoSummary[repoLoc]['PRs collaborated on']++;
-
-      outputPrDetails(edge.node, true);
-    }
+  _.each(nonAuthoredPullRequests, (edge) => {
+    outputPullRequestDetails(edge.node, { outputAuthor: true });
   });
 
-  log(`Non-authored PR collaboration summary: ${nonAuthoredCollaborations} commented on between ${between}\n`);
-  console.table(_.values(repoSummary));
+  log(`Non-authored PR collaboration summary: ${nonAuthoredPullRequests.length} commented on between ${between}\n`);
+  console.table(_.values(getRepoSummary(nonAuthoredPullRequests)));
 }
 
 Promise.all([
