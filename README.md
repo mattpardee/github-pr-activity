@@ -1,10 +1,10 @@
 # Github PR activity
 
-This tool allows you to get a quick overview of the PRs a member of your organization has been authoring
-and collaborating on. You can specify the org, user and how many days you want to pull data from.
+This tool generates reports of the PRs a member of your organization has been authoring and
+collaborating on. You can specify the org, user and how many days you want to pull data from.
 
-It can also "compare" against other user activity in the same run. For example, if you want to see how
-a certain team member compares to other members of the team, you can generate that report.
+It can also "compare" against other user activity in the same run if you want to see how
+a certain team member compares to other members of the team.
 
 ## Installation
 
