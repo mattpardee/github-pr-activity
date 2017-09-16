@@ -2,7 +2,7 @@
   "name": "github-pr-activity",
   "version": "1.0.0",
   "description": "Get pull request activity for a user in your org",
-  "main": "index.js",
+  "main": "activity.js",
   "author": "Matt Pardee <matt@codeability.io>",
   "license": "MIT",
   "dependencies": {

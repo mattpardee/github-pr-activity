@@ -22,17 +22,17 @@ As a fallback the app will use a TOKEN environment var.
 ## Use
 
 ```console
-$ TOKEN=[github auth token] node index.js --owner [org or username] --user [github username] --days 30
+$ TOKEN=[github auth token] node activity --owner [org or username] --user [github username] --days 30
 ```
 
 **For example**
 
 ```console
-$ TOKEN=[github auth token] node index.js --owner change --user mattpardee --days 45
+$ TOKEN=[github auth token] node activity --owner change --user mattpardee --days 45
 
 ... or if you have your API token configured in config/github.json ...
 
-$ node index.js --owner change --user mattpardee --days 45
+$ node activity --owner change --user mattpardee --days 45
 ```
 
 This will output something like:
