@@ -19,10 +19,12 @@ for their GraphQL API; YMMV if you're using your access token(s) heavily, for ex
 You can create a config/github.json file to store the token you'll use for making API requests.
 As a fallback the app will use a TOKEN environment var.
 
-## Use
+## Usage
+
+See all options:
 
 ```console
-$ TOKEN=[github auth token] node activity --owner [org or username] --users <github username(s)> --days 30
+$ node activity --help
 ```
 
 **Examples**
@@ -31,16 +33,16 @@ $ TOKEN=[github auth token] node activity --owner [org or username] --users <git
 $ TOKEN=[github auth token] node activity --owner change --users mattpardee --days 45 --detail
 ```
 
-If you have your API token configured in config/github.json.
+If you have your API token configured in config/github.json:
 
 ```console
 $ node activity --owner change --users mattpardee --days 45 --detail
 ```
 
-Multiple users.
+Multiple users:
 
 ```console
-$ node activity --owner change --users mattpardee,anotheruser,userthere --days 30
+$ node activity --owner change --users mattpardee,anotheruser,userthree --days 30
 ```
 
 This will output something like:
