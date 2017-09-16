@@ -29,13 +29,17 @@ $ TOKEN=[github auth token] node activity --owner [org or username] --users <git
 
 ```console
 $ TOKEN=[github auth token] node activity --owner change --users mattpardee --days 45 --detail
+```
 
-# or if you have your API token configured in config/github.json ...
+If you have your API token configured in config/github.json.
 
+```console
 $ node activity --owner change --users mattpardee --days 45 --detail
+```
 
-# multiple users
+Multiple users.
 
+```console
 $ node activity --owner change --users mattpardee,anotheruser,userthere --days 30
 ```
 
