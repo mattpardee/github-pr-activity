@@ -82,7 +82,7 @@ function run(users) {
       log('');
       console.table(allAuthorStats);
       log('');
-      log('Commenter PR totals'.bgGreen.bold);
+      log('Total PRs commented on'.bgGreen.bold);
       log('');
       console.table(allCommenterStats);
     }
