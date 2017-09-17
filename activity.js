@@ -2,10 +2,12 @@ const _ = require('lodash');
 const moment = require('moment');
 const commander = require('commander');
 const Promise = require('bluebird');
-require('colors');
 const log = require('./lib/log');
+require('colors');
+require('console.table');
+
 const { getUserPullRequestActivity, getTeamMembers } = require('./lib/github');
-const { analyzeAuthorActivity, analyzeCommenterActivity } = require('./lib/analysis');
+const { outputAuthorActivity, outputCommenterActivity } = require('./lib/analysis');
 
 commander
   .version('1.0.0')
@@ -28,7 +30,19 @@ log('');
 
 const outputPullRequestDetails = !!commander.detail;
 
+function checkErrors(body) {
+  if (body.errors) {
+    console.log(body.errors);
+    return true;
+  }
+
+  return false;
+}
+
 function run(users) {
+  const allAuthorStats = [];
+  const allCommenterStats = [];
+
   Promise.map(users, (username) =>
     new Promise(resolve => {
       const user = _.trim(username);
@@ -40,8 +54,18 @@ function run(users) {
       .then(([authorActivity, commenterActivity]) => {
         log(`\n${user.bgCyan.bold}\n`);
 
-        analyzeAuthorActivity(authorActivity, { outputPullRequestDetails });
-        analyzeCommenterActivity(commenterActivity, { user, outputPullRequestDetails });
+        if (!checkErrors(authorActivity)) {
+          outputAuthorActivity(authorActivity.data.search.edges, { outputPullRequestDetails });
+          allAuthorStats.push({ 'User': user, Count: authorActivity.data.search.edges.length });
+        }
+
+        if (!checkErrors(commenterActivity)) {
+          const edges = commenterActivity.data.search.edges;
+          const nonAuthoredPullRequests = _.filter(edges, (edge) => edge.node.author.login !== user);
+
+          outputCommenterActivity(nonAuthoredPullRequests, { user, outputPullRequestDetails });
+          allCommenterStats.push({ 'User': user, Count: nonAuthoredPullRequests.length });
+        }
 
         resolve();
       })
@@ -51,6 +75,18 @@ function run(users) {
       });
     })
   , { concurrency: 3 })
+  .then(() => {
+    if (users.length > 1) {
+      log('');
+      log('Authored PR totals'.bgGreen.bold);
+      log('');
+      console.table(allAuthorStats);
+      log('');
+      log('Commenter PR totals'.bgGreen.bold);
+      log('');
+      console.table(allCommenterStats);
+    }
+  })
   .catch(err => {
     console.error(err);
   });
